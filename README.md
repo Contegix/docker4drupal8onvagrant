@@ -3,7 +3,7 @@ Directions for running on Vagrant
 
 1. Create a CentOS 7 vagrant box and install docker on it
 
-	yum install docker
+        yum install docker
 
 3. Install Git
 
@@ -11,24 +11,24 @@ Directions for running on Vagrant
 
 4. Clone the repo into /opt
 
-	cd /opt && git remote add origin https://github.com/BlackMesh/docker4drupal8onvagrant.git 
+        cd /opt && git remote add origin https://github.com/BlackMesh/docker4drupal8onvagrant.git 
 		
 6. Run the Dockerfile
 
-	cd docker4drupal8onvagrant & docker build -t vagrant/drupal .
+        cd docker4drupal8onvagrant & docker build -t vagrant/drupal .
 		
 6. Run **supervisord**
 
-	docker run -d -v  /var/www/<drupal 8 root directory>:/var/www/html -p 80:80 -p 127.0.0.1:3306:3306 -t -i vagrant/drupal
+        docker run -d -v  /var/www/<drupal 8 root directory>:/var/www/html -p 80:80 -p 127.0.0.1:3306:3306 -t -i vagrant/drupal
 		
 7. In your Vagrantfile, make sure you open up port 80 and 3306
  
-	config.vm.network "forwarded_port", guest: 80, host: 10080
-	config.vm.network "forwarded_port", guest: 3306, host: 13306
+        config.vm.network "forwarded_port", guest: 80, host: 10080
+        config.vm.network "forwarded_port", guest: 3306, host: 13306
 
 9. Open a browser and you should see the screens for setting up drupal
 
-	127.0.0.1:10080
+        127.0.0.1:10080
 
 
 Notes
