@@ -2,7 +2,7 @@
 logfile=/tmp/supervisord.log ; (main log file;default $CWD/supervisord.log)
 logfile_maxbytes=50MB        ; (max main logfile bytes b4 rotation;default 50MB)
 logfile_backups=10           ; (num of main logfile rotation backups;default 10)
-loglevel=info                ; (log level;default info; others: debug,warn,trace)
+loglevel=debug                ; (log level;default info; others: debug,warn,trace)
 pidfile=/tmp/supervisord.pid ; (supervisord pidfile;default supervisord.pid)
 nodaemon=true                ; (start in foreground if true;default false)
 minfds=1024                  ; (min. avail startup file descriptors;default 1024)
@@ -18,13 +18,14 @@ port=127.0.0.1:9001
 serverurl=http://127.0.0.1:9001
 
 [program:mysql]
-command=/usr/bin/pidproxy /var/run/mysql/mysqld.pid /usr/bin/mysqld_safe --pid-file=/var/run/mysql/mysqld.pid
+command=/usr/bin/pidproxy /var/run/mariadb/mysqld.pid /usr/bin/mysqld_safe --user=mysql --pid-file=/var/run/mariadb/mysqld.pid 
 process_name=mysqld
 user_name=mysql
 redirect_stderr=true
 
 [program:httpd]
 command=/usr/sbin/httpd -c "ErrorLog /dev/stdout" -DFOREGROUND
+startsecs=0
 redirect_stderr=true
 process_name=httpd
 

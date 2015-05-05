@@ -1,32 +1,39 @@
-# Docker Drupal
+# Docker Drupal Requirements
 #
 # VERSION       0.1
-# DOCKER-VERSION        0.7.2
+# DOCKER-VERSION        1.5
 FROM    centos:latest
-MAINTAINER Lee Faus <lee@cloudninepartners.com>
+MAINTAINER Solomon S. Gifford <sgifford@blackmesh.com>
 
-RUN rpm -Uvh http://download.fedoraproject.org/pub/epel/6/i386/epel-release-6-8.noarch.rpm
-RUN yum -y install tar wget git mysql-server httpd pwgen python-setuptools vim php php-mysql php-apc php-dom php-gd memcached php-pecl-memcache php-pear-Console-Table mc
+RUN yum -y update
+RUN yum -y install httpd
+
+RUN yum -y install mariadb-server mariadb
+RUN chown -R mysql:mysql /var/lib/mysql
+RUN mysql_install_db --user=mysql > /dev/null
+RUN echo "UPDATE mysql.user SET Password=PASSWORD('root'), Host='%' WHERE User='root' and Host='localhost';" | /usr/libexec/mysqld --bootstrap
+RUN chown -R mysql:mysql /var/lib/mysql
+
+RUN yum -y install php php-mysql php-gd php-mbstring php-xml
+RUN yum -y install php-pear php-devel httpd-devel pcre-devel gcc make
+RUN pecl install apc
+RUN echo "extension=apc.so" > /etc/php.d/apc.ini
+RUN yum -y install memcached php-pecl-memcache
+RUN yum -y install tar wget git httpd pwgen python-setuptools vim
 
 
 # Still need drush
 RUN wget --quiet -O - http://ftp.drupal.org/files/projects/drush-7.x-4.5.tar.gz | tar -zxf - -C /usr/local/share
 RUN ln -s /usr/local/share/drush/drush /usr/local/bin/drush
 
-RUN yum -y update
-
 # Make mysql listen on the outside
 RUN sed -i "s/^bind-address/#bind-address/" /etc/my.cnf
 ADD supervisord /etc/supervisord.conf
-ADD dbscript.sh /tmp/dbscript.sh 
-RUN chmod 775 /tmp/dbscript.sh
-RUN /etc/init.d/mysqld start ; ./tmp/dbscript.sh drupaldb drupal drupal
 
 RUN easy_install supervisor
 
-# Retrieve drupal
-RUN rm -rf /var/www/html ; cd /var/www ; drush dl drupal ; mv /var/www/drupal*/ /var/www/html
-RUN chmod a+w /var/www/html/sites/default ; mkdir /var/www/html/sites/default/files ; chown -R apache:apache /var/www/html ; chmod 775 /var/www/html/sites/default/files
+# Ready for Drupal
+RUN rm -rf /var/www/html 
 
-EXPOSE 80
-CMD ["/usr/bin/supervisord -c /etc/supervisord.conf"]
+EXPOSE 80 3306
+CMD ["/usr/bin/supervisord"]
