@@ -11,7 +11,7 @@ Directions for running on Vagrant
 
 4. Clone the repo into /opt
 
-        cd /opt && git remote add origin https://github.com/BlackMesh/docker4drupal8onvagrant.git 
+        cd /opt && git clone https://github.com/BlackMesh/docker4drupal8onvagrant.git 
 		
 6. Run the Dockerfile
 
